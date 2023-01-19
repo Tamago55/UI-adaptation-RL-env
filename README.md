@@ -5,3 +5,6 @@ En este repositorio se va a alojar la implementación del agente de Reinforcemen
 
 Adicionalmente, también se guardarán los diagramas usados para este proyecto.
 
+#### Dependencias
+* Numpy `pip install numpy`
+* Openai Gym `pip install gym`

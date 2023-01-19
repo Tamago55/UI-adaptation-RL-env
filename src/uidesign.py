@@ -1,7 +1,6 @@
-import numpy as np
 
 class UIDesign:
-
+    
     def __init__(self, layout, functionality, color, font_size):
         self.layout = layout
         self.functionality = functionality
@@ -9,18 +8,17 @@ class UIDesign:
         self.font_size = font_size
 
         self.MAX_font_size = 16
-        self.MIN_font_size = 12
-        
+        self.MIN_font_size = 12       
 
-    def changeLayout(self, layout):
+    def change_layout(self, layout):
         #layout may be one of these: ["default", "compact", "extended"]
         self.layout = layout
 
-    def changeFunctionality(self, functionality):
+    def change_functionality(self, functionality):
         # functionality may be one of these: ["basic", "advanced", "expert"]
         self.functionality = functionality
 
-    def changeColor_scheme(self, color_scheme):
+    def change_color_scheme(self, color_scheme):
         # Color scheme might be one of these: ["light", "dark"]
         self.color_scheme = color_scheme
 

@@ -9,9 +9,6 @@ class User:
     
     def get_satisfaction(self, uiDesign):
         '''
-        Based on the user preference, and given a UIDesign; 
+        Based on the user preference, and given a UIDesign;
         What is the satisfaction for this user using this uiDesign?
         '''
-        pass
-
-

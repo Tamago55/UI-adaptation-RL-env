@@ -20,20 +20,26 @@ class UIAdaptationEnv (gym.Env):
         self.action_space = spaces.Discrete(2)
 
 
-        self.observation_space = spaces.Dict(
-            dict(
-                desired_goal=spaces.Box(-np.inf, np.inf, shape=(2,)),
-                achieved_goal=spaces.Box(-np.inf, np.inf, shape=(2,))
-                )
-            )
-
-        size = 4
-        self.observation_space = spaces.Dict(
-            {
-                "agent": spaces.Box(0, size - 1, shape=(2,), dtype=int),
-                "target": spaces.Box(0, size - 1, shape=(2,), dtype=int),
-            }
-        )
+        self.observation_space = gym.spaces.Dict({
+            'layout': gym.spaces.Discrete(2),
+            'color': gym.spaces.Discrete(2),
+            'size': gym.spaces.Discrete(3),
+            'user': gym.spaces.Dict({
+                'age': gym.spaces.Discrete(4),
+                # 'gender': gym.spaces.Discrete(2),
+                'emotion': gym.spaces.Discrete(3),
+                'experience': gym.spaces.Discrete(10)
+            }),
+            'platform': gym.spaces.Dict({
+                'screen_size': gym.spaces.Box(low=np.array([0, 0]), high=np.array([1920, 1080]), dtype=np.float32),
+                'device': gym.spaces.Discrete(3),
+                'os': gym.spaces.Discrete(3)
+            }),
+            'environment': gym.spaces.Dict({
+                'location': gym.spaces.Discrete(2),
+                #'time': gym.spaces.Discrete(24)
+            })
+        })
 
 
         # assert render_mode is None or render_mode in self.metadata["render_modes"]

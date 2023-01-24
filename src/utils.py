@@ -1,6 +1,7 @@
 import numpy as np
 
 from user import User
+
 from environment import Environment
 from platform_ import Platform
 
@@ -10,12 +11,13 @@ def get_random_user():
     '''
     DocString
     '''
-    age = np.random.normal(35, 20)
-    gender = np.random.choice(["male", "female"])
-    education = np.random.choice(["high school", "college", "graduate"])
-    experience = np.random.normal(5, 2)
+    age = np.random.choice(["teen", "young", "adult", "elder"])
+    # gender = np.random.choice(["male", "female"])
+    # education = np.random.choice(["high school", "college", "graduate"])
+    experience = np.random.choice(["basic", "advanced"])
+    emotion = np.random.choice(["frustrated", "happy", "neutral"])
     preferences = {}
-    return User(gender, age, education, experience, preferences)
+    return User(age, emotion, experience, preferences)
 
 def get_random_environment():
     '''

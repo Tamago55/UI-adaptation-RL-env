@@ -6,6 +6,7 @@ class User:
         * experience = [basic, advanced]
         * preferences = {dictionary with UIDesign Preferences}
     '''
+    
     def __init__(self, age, emotion, experience, preferences):
         self.age = age
         self.emotion = emotion

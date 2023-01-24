@@ -1,10 +1,10 @@
 import numpy as np
 
 from user import User
-
 from environment import Environment
 from platform_ import Platform
 
+from uidesign import UIDesign
 
 
 def get_random_user():
@@ -34,4 +34,15 @@ def get_random_platform():
     platform_os = np.random.choice(["Windows", "Android", "iOS", "Linux"])
     screen_size = np.random.normal(500,220) ## This should be checked.
     return Platform(device,platform_os,screen_size)
+
+def get_random_ui():
+    layout = np.random.choice(["grid", "list"])
+    color_scheme = np.random.choice(["light", "dark"])
+    font_size = np.random.choice(["default", "small", "big"])
+    print("\tcreated this UI: {} layout, {} color_scheme, {} font_size".format(
+        layout,
+        color_scheme,
+        font_size
+    ))
+    return UIDesign(layout,color_scheme,font_size)
 

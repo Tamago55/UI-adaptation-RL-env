@@ -16,7 +16,14 @@ def get_random_user():
     # education = np.random.choice(["high school", "college", "graduate"])
     experience = np.random.choice(["basic", "advanced"])
     emotion = np.random.choice(["frustrated", "happy", "neutral"])
-    preferences = {}
+    random_ui = get_random_ui()
+    preferences = {'layout': random_ui.layout,
+                   'font_size': random_ui.font_size,
+                   'color_scheme': random_ui.color_scheme}
+
+    print("created this user: age {}, experience {}, emotion{}, preferences {}".format(
+        age, experience, emotion, preferences
+    ))
     return User(age, emotion, experience, preferences)
 
 def get_random_environment():

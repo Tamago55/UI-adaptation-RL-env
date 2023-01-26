@@ -1,9 +1,5 @@
-from PyQt5 import QtWidgets, QtCore
-from threading import Thread
 
 class UIDesign:
-    
-    
     def __init__(self, layout, color, font_size):
         self.font_sizes = {
             'big': 16,
@@ -15,21 +11,9 @@ class UIDesign:
         self.font_size = self.font_sizes[font_size]
 
         ### CREATE THE APP TO DISPLAY THE UI
-        self.app = QtWidgets.QApplication([])
-        self.label = QtWidgets.QLabel("Hello, World!")
-        self.label.setAlignment(QtCore.Qt.AlignCenter)
-        self.button = QtWidgets.QPushButton("Click me!")
-        self.button.clicked.connect(self.on_button_clicked)
-        self.Qtlayout = QtWidgets.QVBoxLayout()
-        self.Qtlayout.addWidget(self.label)
-        self.Qtlayout.addWidget(self.button)
-        self.window = QtWidgets.QWidget()
-        self.window.setLayout(self.Qtlayout)
-        self.window.show()
-        self.ui_thread = Thread(target=self.app.exec_)
-        self.ui_thread.start()
-
-
+        #self.ui = App()
+        #self.ui_thread = Thread(target=self.ui.showUI())
+        # self.ui_thread.start()
 
     def change_layout(self, layout):
         #layout may be one of these: ["grid", "list"]
@@ -43,6 +27,13 @@ class UIDesign:
         # Color scheme might be one of these: ["default", "small", "big"]
         self.font_size = self.font_sizes[font_size]
 
+    def render(self):
+        print("\tlayout: {}\n\tcolor_scheme: {}\n\tfont_size: {}".format(
+            self.layout,
+            self.color_scheme,
+            self.font_size
+        ))
+        # self.ui.render(self)
 
     def get_state(self):
         return {
@@ -51,11 +42,3 @@ class UIDesign:
             'font_size': self.font_size
         }
 
-    def on_button_clicked(self):
-        layout = self.layout
-        color = self.color_scheme
-        font = self.font_size
-        self.label.setText("Layout: {}\nColor: {}\nFont: {}".format(layout, color, font))
-    
-    def render_ui(self):
-        pass

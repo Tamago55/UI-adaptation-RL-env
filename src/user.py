@@ -1,4 +1,27 @@
 import numpy as np
+from enum import Enum
+
+class AGE(Enum):
+    teen = 0
+    young = 1
+    adult = 2
+    elder = 3
+
+class GENDER(Enum):
+    notObt = 0
+    male = 1
+    female = 2
+
+class EMOTION(Enum):
+    frustrated = 0
+    happy = 1
+    neutral = 2
+
+class EXPERIENCE(Enum):
+    basic = 0
+    advanced = 1
+
+
 class User:  
     '''
         * age = [teen, young, adult, elder]
@@ -8,8 +31,9 @@ class User:
         * preferences = {dictionary with UIDesign Preferences}
     '''
     
-    def __init__(self, age, emotion, experience, preferences):
+    def __init__(self, age, gender, emotion, experience, preferences):
         self.age = age
+        self.gender = gender
         self.emotion = emotion
         self.experience = experience
         self.preferences = preferences
@@ -41,5 +65,15 @@ class User:
         if self.emotion == 'neutral':
             pass
         return score
+
+    def get_state(self):
+        return {
+            'user': {
+                'age': AGE[self.age].value,
+                'gender': GENDER[self.gender].value,
+                'emotion': EMOTION[self.emotion].value,
+                'experience': EXPERIENCE[self.experience].value 
+            }
+        }
         
 

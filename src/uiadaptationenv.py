@@ -69,8 +69,6 @@ class UIAdaptationEnv (gym.Env):
 
     def step(self, action):
         initial_design = copy.deepcopy(self.uidesign)
-        print(initial_design)
-        print(self.uidesign)
         penalize_flag = False
         if action == 0:
             # noop
@@ -126,5 +124,15 @@ class UIAdaptationEnv (gym.Env):
         print("REWARD: {}".format(reward))
         #return super().step(action)
 
-   
+    def reset(self):
+        uidesign_state = self.uidesign.get_state()
+        user_state = self.user.get_state()
+        environment_state = self.environment.get_state()
+        platform_state = self.platform.get_state()
 
+        self.state = {
+            **uidesign_state,
+            **user_state, 
+            **platform_state,
+            **environment_state
+            }

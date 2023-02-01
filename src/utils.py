@@ -12,7 +12,7 @@ def get_random_user():
     DocString
     '''
     age = np.random.choice(["teen", "young", "adult", "elder"])
-    # gender = np.random.choice(["male", "female"])
+    gender = np.random.choice(["male", "female", "notObt"])
     # education = np.random.choice(["high school", "college", "graduate"])
     experience = np.random.choice(["basic", "advanced"])
     emotion = np.random.choice(["frustrated", "happy", "neutral"])
@@ -24,7 +24,7 @@ def get_random_user():
     print("created this user: age {}, experience {}, emotion{}, preferences {}".format(
         age, experience, emotion, preferences
     ))
-    return User(age, emotion, experience, preferences)
+    return User(age, gender, emotion, experience, preferences)
 
 def get_random_environment():
     '''
@@ -38,8 +38,8 @@ def get_random_platform():
     DocString
     '''
     device = np.random.choice(["desktop", "tablet", "mobile"])
-    platform_os = np.random.choice(["Windows", "Android", "iOS", "Linux"])
-    screen_size = np.random.normal(500,220) ## This should be checked.
+    platform_os = np.random.choice(["windows", "android", "ios", "linux"])
+    screen_size = np.random.uniform(low=[0, 0], high=[1920, 1080])
     return Platform(device,platform_os,screen_size)
 
 def get_random_ui():

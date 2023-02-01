@@ -25,7 +25,7 @@ class EXPERIENCE(Enum):
 class User:  
     '''
         * age = [teen, young, adult, elder]
-        ###* gender = [male, female, noOb]
+        * gender = [male, female, noOb]
         * emotion = [frustrated, happy, neutral]
         * experience = [basic, advanced]
         * preferences = {dictionary with UIDesign Preferences}
@@ -39,7 +39,9 @@ class User:
         self.preferences = preferences
 
     def update_emotion(self, initial_ui_design, current_ui_design):
-        if (np.abs(current_ui_design.font_size - initial_ui_design.font_size) <= 2):
+        current_f_size = current_ui_design.font_sizes[current_ui_design.font_size]
+        initial_f_size = initial_ui_design.font_sizes[initial_ui_design.font_size]
+        if (np.abs(current_f_size - initial_f_size) <= 2):
             self.emotion = np.random.choice(["happy","neutral"])
         else:
             self.emotion = 'frustrated'
@@ -75,5 +77,12 @@ class User:
                 'experience': EXPERIENCE[self.experience].value 
             }
         }
-        
+    
+    def info(self):
+        print("\tage: {}\n\tgender: {}\n\temotion: {}\n\tpreferences: {}".format(
+            self.age,
+            self.gender,
+            self.emotion,
+            self.preferences
+        ))
 

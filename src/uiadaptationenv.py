@@ -18,11 +18,11 @@ class UIAdaptationEnv (gym.Env):
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 4}
 
     def __init__(self,render_mode=None):
-        self.state = None
         self.user = utils.get_random_user()
         self.platform = utils.get_random_platform()
         self.environment = utils.get_random_environment()
         self.uidesign = utils.get_random_ui()
+        self.state = self.get_observation()
 
         # We have 4 actions, corresponding to "NoOperate", "DefaultLayout", "left", "down", "right"
         self.action_space = spaces.Discrete(8)
@@ -33,7 +33,7 @@ class UIAdaptationEnv (gym.Env):
             'size': gym.spaces.Discrete(3),
             'user': gym.spaces.Dict({
                 'age': gym.spaces.Discrete(4),
-                # 'gender': gym.spaces.Discrete(2),
+                'gender': gym.spaces.Discrete(2),
                 'emotion': gym.spaces.Discrete(3),
                 'experience': gym.spaces.Discrete(10)
             }),
@@ -48,6 +48,8 @@ class UIAdaptationEnv (gym.Env):
             })
         })
 
+        self.reward_collected = 0
+
         assert render_mode is None or render_mode in self.metadata["render_modes"]
         self.render_mode = render_mode
 
@@ -59,6 +61,8 @@ class UIAdaptationEnv (gym.Env):
         rendering is not important
         '''
         self.uidesign.render()
+        print("\t-----")
+        self.user.info()
     
     def close (self):
         '''
@@ -68,6 +72,9 @@ class UIAdaptationEnv (gym.Env):
         pass
 
     def step(self, action):
+        done = False
+        info = {}
+        reward = 0
         initial_design = copy.deepcopy(self.uidesign)
         penalize_flag = False
         if action == 0:
@@ -116,15 +123,42 @@ class UIAdaptationEnv (gym.Env):
             else:        
                 self.uidesign.change_font_size('big')
 
-        self.user.update_emotion(initial_design, self.uidesign)
+        ## if the action had no effect (repeated action), we penalize the agent.
         if penalize_flag:
-            reward = -500
+            reward = -5
         else:
-            reward = self.user.get_satisfaction(self.uidesign)
-        print("REWARD: {}".format(reward))
+            reward = self.user.get_satisfaction(self.uidesign)    
+            ## After an action, only if UI was updated, user emotions are updated.
+            self.user.update_emotion(initial_design, self.uidesign)
+
+        self.state = self.get_observation()
+        
+        self.reward_collected += reward
+
+        # If we obtain the maxium reward (5), then the agent has adapted the UI to
+        # the user preferences and achieved the `happy` emotion
+        if reward == 4:
+            done = True
+        print("ONE STEP! action {}. REWARD: {} - Collected_reward: {}".format(
+            action,
+            reward,
+            self.reward_collected))
+        self.render()
+        return self.state, self.reward_collected, done, info
+
         #return super().step(action)
 
+
     def reset(self):
+        print("RESET! CREATING A NEW UI AND CONTEXT")
+        self.user = utils.get_random_user()
+        self.platform = utils.get_random_platform()
+        self.environment = utils.get_random_environment()
+        self.uidesign = utils.get_random_ui()
+        self.state = self.get_observation()
+
+
+    def get_observation(self):
         uidesign_state = self.uidesign.get_state()
         user_state = self.user.get_state()
         environment_state = self.environment.get_state()
@@ -136,3 +170,4 @@ class UIAdaptationEnv (gym.Env):
             **platform_state,
             **environment_state
             }
+        return self.state

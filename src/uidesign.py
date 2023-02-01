@@ -40,7 +40,8 @@ class UIDesign:
 
     def change_font_size(self, font_size):
         # Color scheme might be one of these: ["default", "small", "big"]
-        self.font_size = self.font_sizes[font_size]
+        # self.font_size = self.font_sizes[font_size]
+        self.font_size = font_size
 
     def render(self):
         print("\tlayout: {}\n\tcolor_scheme: {}\n\tfont_size: {}".format(

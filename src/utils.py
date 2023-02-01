@@ -38,7 +38,7 @@ def get_random_platform():
     DocString
     '''
     device = np.random.choice(["desktop", "tablet", "mobile"])
-    platform_os = np.random.choice(["Windows", "Android", "iOS", "Linux"])
+    platform_os = np.random.choice(["windows", "android", "ios", "linux"])
     screen_size = np.random.uniform(low=[0, 0], high=[1920, 1080])
     return Platform(device,platform_os,screen_size)
 

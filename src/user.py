@@ -22,7 +22,7 @@ class EXPERIENCE(Enum):
     advanced = 1
 
 
-class User:  
+class User:
     '''
         * age = [teen, young, adult, elder]
         * gender = [male, female, noOb]
@@ -30,7 +30,7 @@ class User:
         * experience = [basic, advanced]
         * preferences = {dictionary with UIDesign Preferences}
     '''
-    
+
     def __init__(self, age, gender, emotion, experience, preferences):
         self.age = age
         self.gender = gender
@@ -71,10 +71,10 @@ class User:
     def get_state(self):
         return {
             'user': {
-                'age': AGE[self.age].value,
-                'gender': GENDER[self.gender].value,
-                'emotion': EMOTION[self.emotion].value,
-                'experience': EXPERIENCE[self.experience].value 
+                # 'age': AGE[self.age].value,
+                # 'gender': GENDER[self.gender].value,
+                'emotion': EMOTION[self.emotion].value
+                # 'experience': EXPERIENCE[self.experience].value 
             }
         }
     

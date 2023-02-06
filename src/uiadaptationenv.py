@@ -14,7 +14,7 @@ class UIAdaptationEnv (gym.Env):
     '''
     DocString
     '''
-
+    
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 4}
 
     def __init__(self,render_mode=None):
@@ -24,21 +24,34 @@ class UIAdaptationEnv (gym.Env):
         self.uidesign = utils.get_random_ui()
         self.state = self.get_observation()
 
-        # We have 4 actions, corresponding to "NoOperate", "DefaultLayout", "left", "down", "right"
+        # We have 8 actions, corresponding to:
+        # NoOperate,
+        # GridLayout, List Layout,
+        # Dark theme, Light theme
+        # Default font_size, Small font_size, Big font_size
         self.action_space = spaces.Discrete(8)
 
-        self.observation_space = gym.spaces.Dict({
+        '''
+        Layout (2), Colour (2), FSize (3) = 12 combinations
+        user = 3 emotions
+        platform = 2 posibilities (Windows-desktop OR mobile android)
+        environment = 2 posibilities (in/out door)
+        Total possibilities = 12*3*2*2 = 144
+        '''
+        self.observation_space = gym.spaces.Discrete(144)
+
+        '''self.observation_space = gym.spaces.Dict({
             'layout': gym.spaces.Discrete(2),
             'color': gym.spaces.Discrete(2),
             'size': gym.spaces.Discrete(3),
             'user': gym.spaces.Dict({
-                'age': gym.spaces.Discrete(4),
-                'gender': gym.spaces.Discrete(2),
+                # 'age': gym.spaces.Discrete(4),
+                # 'gender': gym.spaces.Discrete(2),
                 'emotion': gym.spaces.Discrete(3),
-                'experience': gym.spaces.Discrete(10)
+                # 'experience': gym.spaces.Discrete(2)
             }),
             'platform': gym.spaces.Dict({
-                'screen_size': gym.spaces.Box(low=np.array([0, 0]), high=np.array([1920, 1080]), dtype=np.float32),
+                # 'screen_size': gym.spaces.Box(low=np.array([0, 0]), high=np.array([1920, 1080]), dtype=np.float32),
                 'device': gym.spaces.Discrete(3),
                 'os': gym.spaces.Discrete(3)
             }),
@@ -46,7 +59,7 @@ class UIAdaptationEnv (gym.Env):
                 'location': gym.spaces.Discrete(2),
                 #'time': gym.spaces.Discrete(24)
             })
-        })
+        })'''
 
         self.reward_collected = 0
 
@@ -120,7 +133,7 @@ class UIAdaptationEnv (gym.Env):
             # Change to big font size
             if self.uidesign.font_size == 'big':
                 penalize_flag = True
-            else:        
+            else:
                 self.uidesign.change_font_size('big')
 
         ## if the action had no effect (repeated action), we penalize the agent.
@@ -149,16 +162,32 @@ class UIAdaptationEnv (gym.Env):
         #return super().step(action)
 
 
-    def reset(self):
+    def reset(self, *, seed = None, options = None):
         print("RESET! CREATING A NEW UI AND CONTEXT")
         self.user = utils.get_random_user()
         self.platform = utils.get_random_platform()
         self.environment = utils.get_random_environment()
         self.uidesign = utils.get_random_ui()
         self.state = self.get_observation()
+        #self.state = self.state_as_array()
+        return self.state
+
+    def state_as_array(self, state):
+        state_array = []
+        for a in state:
+            if type(state[a]) is dict:
+                for b in state[a]:
+                    state_array.append(state[a][b])
+            else:
+                state_array.append(state[a])
+        return state_array
 
 
     def get_observation(self):
+        """
+            This method traduces the representation of the state into an observation
+            that the gym can work with.
+        """
         uidesign_state = self.uidesign.get_state()
         user_state = self.user.get_state()
         environment_state = self.environment.get_state()
@@ -170,4 +199,4 @@ class UIAdaptationEnv (gym.Env):
             **platform_state,
             **environment_state
             }
-        return self.state
+        return self.state_as_array(self.state)

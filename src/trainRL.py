@@ -49,8 +49,9 @@ for i in range(epis):
 
         
         print(env.action_space.n)
-        print(s1)
-        print(Q)
+        print("s: ", s)
+        print("a: ", a)
+        print(Q[s,a])
         print(i)
         print("---------------------")
         print("---------------------")

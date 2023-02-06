@@ -39,7 +39,8 @@ def get_random_platform():
     '''
     device = np.random.choice(["desktop", "tablet", "mobile"])
     platform_os = np.random.choice(["windows", "android", "ios", "linux"])
-    screen_size = np.random.uniform(low=[0, 0], high=[1920, 1080])
+    screen_size = np.random.choice(["small", "big","default"])
+    #screen_size = np.random.uniform(low=[0, 0], high=[1920, 1080])
     return Platform(device,platform_os,screen_size)
 
 def get_random_ui():

@@ -11,6 +11,11 @@ class OS(Enum):
     ios = 2
     linux = 3
 
+class SCREEN_SIZE(Enum):
+    default = 0
+    big = 1
+    small = 2
+
 
 class Platform:
     def __init__(self, device, os, screen_size):
@@ -23,6 +28,7 @@ class Platform:
             'platform': {
                 'device': DEVICE[self.device].value,
                 'os': OS[self.os].value
+                # 'screen_size': SCREEN_SIZE[self.screen_size].value
                 # 'screen_size': self.np_random.uniform(low=[0, 0], high=[1920, 1080]),
 
             }

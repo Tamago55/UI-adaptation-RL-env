@@ -11,11 +11,18 @@ import copy
 
 
 class UIAdaptationEnv (gym.Env):
-    '''
-    DocString
-    '''
     
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 4}
+    actions = {
+        0: 'noOperate',
+        1: 'Layout to grid',
+        2: 'Layout to list',
+        3: 'Color to light',
+        4: 'Color to dark',
+        5: 'Default size',
+        6: 'Small size',
+        7: 'Big size'
+    }
 
     def __init__(self,render_mode=None):
         self.user = utils.get_random_user()
@@ -29,7 +36,9 @@ class UIAdaptationEnv (gym.Env):
         # GridLayout, List Layout,
         # Dark theme, Light theme
         # Default font_size, Small font_size, Big font_size
-        self.action_space = spaces.Discrete(8)
+        
+        #self.action_space = spaces.Discrete(8)
+        self.action_space = spaces.Discrete(7)
 
         '''
         Layout (2), Colour (2), FSize (3) = 12 combinations
@@ -38,28 +47,12 @@ class UIAdaptationEnv (gym.Env):
         environment = 2 posibilities (in/out door)
         Total possibilities = 12*3*2*2 = 144
         '''
-        self.observation_space = gym.spaces.Discrete(144)
-
-        '''self.observation_space = gym.spaces.Dict({
-            'layout': gym.spaces.Discrete(2),
-            'color': gym.spaces.Discrete(2),
-            'size': gym.spaces.Discrete(3),
-            'user': gym.spaces.Dict({
-                # 'age': gym.spaces.Discrete(4),
-                # 'gender': gym.spaces.Discrete(2),
-                'emotion': gym.spaces.Discrete(3),
-                # 'experience': gym.spaces.Discrete(2)
-            }),
-            'platform': gym.spaces.Dict({
-                # 'screen_size': gym.spaces.Box(low=np.array([0, 0]), high=np.array([1920, 1080]), dtype=np.float32),
-                'device': gym.spaces.Discrete(3),
-                'os': gym.spaces.Discrete(3)
-            }),
-            'environment': gym.spaces.Dict({
-                'location': gym.spaces.Discrete(2),
-                #'time': gym.spaces.Discrete(24)
-            })
-        })'''
+        self.observation_space = gym.spaces.MultiDiscrete([ 2, 2, 3,    #layout
+                                                            2, 2, 3, 3, #user pref + emotion
+                                                            2, 2,       #platform
+                                                            2  ])       #environment
+        
+        self.observation_space_size = np.prod(self.observation_space.nvec)
 
         self.reward_collected = 0
 
@@ -84,52 +77,55 @@ class UIAdaptationEnv (gym.Env):
         '''
         pass
 
-    def step(self, action):
+    def step(self, action, verbose=False):
         done = False
         info = {}
         reward = 0
         initial_design = copy.deepcopy(self.uidesign)
         penalize_flag = False
+
+        action_num = action + 1
+
         if action == 0:
             # noop
             pass
-        elif action == 1:
+        elif action_num == 1:
             # Change to Grid
             if self.uidesign.layout == 'grid':
                 penalize_flag = True
             else:
                 self.uidesign.change_layout('grid')
-        elif action == 2:
+        elif action_num == 2:
             # Change to List
             if self.uidesign.layout == 'list':
                 penalize_flag = True
             else:
                 self.uidesign.change_layout('list')
-        elif action == 3:
+        elif action_num == 3:
             # Change to Light color
             if self.uidesign.color_scheme == 'light':
                 penalize_flag = True
             else:
                 self.uidesign.change_color_scheme('light')
-        elif action == 4:
+        elif action_num == 4:
             # Change to Dark color
             if self.uidesign.color_scheme == 'dark':
                 penalize_flag = True
             else:
                 self.uidesign.change_color_scheme('dark')
-        elif action == 5:
+        elif action_num == 5:
             # Change to default font size.
             if self.uidesign.font_size == 'default':
                 penalize_flag = True
             else:
                 self.uidesign.change_font_size('default')
-        elif action == 6:
+        elif action_num == 6:
             # Change to small font size
             if self.uidesign.font_size == 'small':
                 penalize_flag = True
             else:
                 self.uidesign.change_font_size('small')
-        elif action == 7:
+        elif action_num == 7:
             # Change to big font size
             if self.uidesign.font_size == 'big':
                 penalize_flag = True
@@ -152,34 +148,46 @@ class UIAdaptationEnv (gym.Env):
         # the user preferences and achieved the `happy` emotion
         if reward == 4:
             done = True
-        print("ONE STEP! action {}. REWARD: {} - Collected_reward: {}".format(
-            action,
-            reward,
-            self.reward_collected))
-        self.render()
-        return self.state, self.reward_collected, done, info
+        
+        if verbose:
+            print("ONE STEP! action {} - {} . REWARD: {} - Collected_reward: {}".format(
+                action,
+                self.actions[action_num],
+                reward,
+                self.reward_collected))
+
+        return self.state, reward, done, info
 
         #return super().step(action)
 
 
     def reset(self, *, seed = None, options = None):
         print("RESET! CREATING A NEW UI AND CONTEXT")
-        self.user = utils.get_random_user()
-        self.platform = utils.get_random_platform()
-        self.environment = utils.get_random_environment()
+        # self.user = utils.get_random_user()
+        # self.platform = utils.get_random_platform()
+        # self.environment = utils.get_random_environment()
         self.uidesign = utils.get_random_ui()
         self.state = self.get_observation()
+        self.reward_collected = 0
         #self.state = self.state_as_array()
+        print("returning the state: ")
+        print(self.state)
         return self.state
 
-    def state_as_array(self, state):
+    def state_as_array(self, state, npArray=False):
         state_array = []
         for a in state:
             if type(state[a]) is dict:
                 for b in state[a]:
-                    state_array.append(state[a][b])
+                    if type(state[a][b]) is dict:
+                        for c in state[a][b]:
+                            state_array.append(state[a][b][c])
+                    else:
+                        state_array.append(state[a][b])
             else:
                 state_array.append(state[a])
+        if npArray:
+            return np.array(state_array)
         return state_array
 
 
@@ -199,4 +207,4 @@ class UIAdaptationEnv (gym.Env):
             **platform_state,
             **environment_state
             }
-        return self.state_as_array(self.state)
+        return self.state_as_array(self.state, npArray=True)

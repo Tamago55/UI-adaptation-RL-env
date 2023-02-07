@@ -7,7 +7,7 @@ from platform_ import Platform
 from uidesign import UIDesign
 
 
-def get_random_user():
+def get_random_user(verbose=False):
     '''
     DocString
     '''
@@ -21,10 +21,10 @@ def get_random_user():
     preferences = {'layout': random_ui.layout,
                    'font_size': random_ui.font_size,
                    'color_scheme': random_ui.color_scheme}
-
-    print("created this user: age {}, experience {}, emotion{}, preferences {}".format(
-        age, experience, emotion, preferences
-    ))
+    if verbose:
+        print("created this user: age {}, experience {}, emotion{}, preferences {}".format(
+            age, experience, emotion, preferences
+        ))
     return User(age, gender, emotion, experience, preferences)
 
 def get_random_environment():
@@ -52,14 +52,15 @@ def get_random_platform():
     #screen_size = np.random.uniform(low=[0, 0], high=[1920, 1080])
     return Platform(device,platform_os,screen_size)
 
-def get_random_ui():
+def get_random_ui(verbose=False):
     layout = np.random.choice(["grid", "list"])
     color_scheme = np.random.choice(["light", "dark"])
     font_size = np.random.choice(["default", "small", "big"])
-    print("\tcreated this UI: {} layout, {} color_scheme, {} font_size".format(
-        layout,
-        color_scheme,
-        font_size
-    ))
+    if verbose:
+        print("\tcreated this UI: {} layout, {} color_scheme, {} font_size".format(
+            layout,
+            color_scheme,
+            font_size
+        ))
     return UIDesign(layout,color_scheme,font_size)
 

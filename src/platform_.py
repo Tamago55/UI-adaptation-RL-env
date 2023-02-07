@@ -2,8 +2,8 @@ from enum import Enum
 
 class DEVICE(Enum):
     desktop = 0
-    tablet = 1
-    mobile = 2
+    #tablet = 1
+    mobile = 1
 
 class OS(Enum):
     windows = 0

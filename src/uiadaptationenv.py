@@ -9,7 +9,6 @@ import utils
 
 import copy
 
-
 class UIAdaptationEnv (gym.Env):
     
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 4}
@@ -37,8 +36,8 @@ class UIAdaptationEnv (gym.Env):
         # Dark theme, Light theme
         # Default font_size, Small font_size, Big font_size
         
-        #self.action_space = spaces.Discrete(8)
-        self.action_space = spaces.Discrete(7)
+        self.action_space = spaces.Discrete(8)
+        # self.action_space = spaces.Discrete(7)
 
         '''
         Layout (2), Colour (2), FSize (3) = 12 combinations
@@ -84,9 +83,10 @@ class UIAdaptationEnv (gym.Env):
         initial_design = copy.deepcopy(self.uidesign)
         penalize_flag = False
 
-        action_num = action + 1
+        # action_num = action + 1
+        action_num = action
 
-        if action == 0:
+        if action_num == 0:
             # noop
             pass
         elif action_num == 1:
@@ -146,7 +146,7 @@ class UIAdaptationEnv (gym.Env):
 
         # If we obtain the maxium reward (5), then the agent has adapted the UI to
         # the user preferences and achieved the `happy` emotion
-        if reward == 4:
+        if reward >= 4:
             done = True
         
         if verbose:
@@ -162,7 +162,7 @@ class UIAdaptationEnv (gym.Env):
 
 
     def reset(self, *, seed = None, options = None):
-        print("RESET! CREATING A NEW UI AND CONTEXT")
+        # print("RESET! CREATING A NEW UI AND CONTEXT")
         # self.user = utils.get_random_user()
         # self.platform = utils.get_random_platform()
         # self.environment = utils.get_random_environment()
@@ -170,8 +170,6 @@ class UIAdaptationEnv (gym.Env):
         self.state = self.get_observation()
         self.reward_collected = 0
         #self.state = self.state_as_array()
-        print("returning the state: ")
-        print(self.state)
         return self.state
 
     def state_as_array(self, state, npArray=False):

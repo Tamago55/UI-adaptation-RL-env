@@ -21,8 +21,10 @@ steps = 100
 
 # Define the metric list to plot
 mean_reward_per_episode = []
-rewards_per_episode = []
+total_reward_per_episode = []
 number_of_steps_to_complete = []
+
+actions_history = []
 
 for episode in range(episodes):
     # Reset the environment and get the initial state
@@ -32,16 +34,17 @@ for episode in range(episodes):
     
     rewards = []
 
-    for step in range(steps):
-        print("\tSTEP{}".format(step))
-        # env.render()
+    actions_episode = []
 
+    for step in range(steps):
         # Choose an action using an epsilon-greedy policy
         if random.uniform(0, 1) < epsilon:
             action = env.action_space.sample()
         else:
             action = np.argmax(q_table[state_idx, :])
         
+        actions_episode.append(action)
+
         # Take the action and get the next state, reward, and done flag
         next_state, reward, done, _ = env.step(action)
         next_state_idx = np.ravel_multi_index(next_state, observation_space_size)
@@ -57,8 +60,10 @@ for episode in range(episodes):
         # Check if the episode is done
         if done:
             break
+    actions_history.append(actions_episode)
+
     mean_reward_per_episode.append(np.mean(rewards))
-    rewards_per_episode.append(reward)
+    total_reward_per_episode.append(env.reward_collected)
     number_of_steps_to_complete.append(step)
 
 
@@ -66,8 +71,8 @@ for episode in range(episodes):
 fig, ax = plt.subplots(1, 2)
 
 # Plot the data in the first subplot
-ax[0].plot(mean_reward_per_episode)
-ax[0].set_title("Mean reward per Episode")
+ax[0].plot(total_reward_per_episode)
+ax[0].set_title("Total (acumulated) reward per Episode")
 
 # Plot the data in the second subplot
 ax[1].plot(number_of_steps_to_complete)
@@ -75,6 +80,3 @@ ax[1].set_title("Steps to complete episode")
 
 # Show the figure
 plt.show()
-
-
-

@@ -18,6 +18,3 @@ class Environment:
                 'location': LOCATION[self.location].value
             }
         }
-
-    
-

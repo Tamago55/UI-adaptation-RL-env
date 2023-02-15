@@ -2,6 +2,9 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 from uiadaptationenv import UIAdaptationEnv
+import os
+import pickle
+import datetime
 
 # Define the environment
 env = UIAdaptationEnv()
@@ -10,14 +13,20 @@ action_space_size = env.action_space.n
 
 # Define the Q-table
 q_table = np.zeros((np.prod(observation_space_size), action_space_size))
-# Define the learning rate, discount factor and exploration rate.
-alpha = 0.1
-gamma = 0.9
-epsilon = 0.1
+
+# define hyperparameters ----------
+alpha = 0.1           # Learning rate
+gamma = 0.9                  # Discounting rate
+
+# Exploration parameters
+epsilon = 1.0                 # Exploration rate
+max_epsilon = 1.0             # Exploration probability at start
+min_epsilon = 0.00            # Minimum exploration probability
+decay_rate = 0.00005          # Exponential decay rate for exploration prob
 
 # Define the num of episodes and steps per episode
-episodes = 1000
-steps = 100
+episodes = 250000
+steps = 5
 
 # Define the metric list to plot
 mean_reward_per_episode = []
@@ -25,16 +34,20 @@ total_reward_per_episode = []
 number_of_steps_to_complete = []
 
 actions_history = []
+epsilon_history = []
+total_done = []
 
 for episode in range(episodes):
     # Reset the environment and get the initial state
-    print("EPISODE {}".format(episode))
+    print(f"EPISODE {episode}")
     state = env.reset()
     state_idx = np.ravel_multi_index(state, observation_space_size)
-    
-    rewards = []
 
+    rewards_episode = []
+    rewards = []
     actions_episode = []
+    
+    epsilon_history.append(epsilon)
 
     for step in range(steps):
         # Choose an action using an epsilon-greedy policy
@@ -54,29 +67,71 @@ for episode in range(episodes):
         
         # Update the state
         state = next_state
-
-        rewards.append(reward)
         
+        rewards_episode.append(reward)
         # Check if the episode is done
         if done:
             break
+
+    
+    # Reduce epsilon (because we need less and less exploration)
+    epsilon = min_epsilon + (max_epsilon - min_epsilon)*np.exp(-decay_rate*episode)
+
+    rewards.append(reward)
+    
     actions_history.append(actions_episode)
 
-    mean_reward_per_episode.append(np.mean(rewards))
+    total_done.append(done)
+
+    mean_reward_per_episode.append(np.max(rewards_episode))
     total_reward_per_episode.append(env.reward_collected)
     number_of_steps_to_complete.append(step)
 
+counter = 0
+for q in q_table:
+    if q.any():
+        print(q)
+    else:
+        counter+=1
+print(str(counter) + " zeros.")
 
 # Create a single figure with two subplots
-fig, ax = plt.subplots(1, 2)
+fig, ax = plt.subplots(2, 2)
 
 # Plot the data in the first subplot
-ax[0].plot(total_reward_per_episode)
-ax[0].set_title("Total (acumulated) reward per Episode")
+ax[0][0].plot(number_of_steps_to_complete)
+ax[0][0].set_title("number_of_steps_to_complete")
 
 # Plot the data in the second subplot
-ax[1].plot(number_of_steps_to_complete)
-ax[1].set_title("Steps to complete episode")
+ax[0][1].plot(mean_reward_per_episode)
+ax[0][1].set_title("Rewards per episode")
+
+# Plot the data in the second subplot
+ax[1][0].plot(epsilon_history)
+ax[1][0].set_title("E-Decay ")
+
+# Plot the data in the second subplot
+ax[1][1].plot(total_done)
+ax[1][1].set_title("Done evolution?")
+
 
 # Show the figure
 plt.show()
+
+current_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
+models_dir = 'RL_algorithms/models'
+filename = "q_table_" + current_time + ".pickle"
+file_path = models_dir+"/"+filename
+# Check if the directory for models exists
+if not os.path.exists(models_dir):
+    os.makedirs(models_dir)
+
+
+# Save the metrics and the model to disk
+with open(file_path, 'wb') as file:
+    pickle_data = {'mean_reward_per_episode': mean_reward_per_episode,
+                   'total_reward_per_episode': total_reward_per_episode,
+                   'number_of_steps_to_complete': number_of_steps_to_complete,
+                   'q_table': q_table}
+    pickle.dump(pickle_data, file)
+

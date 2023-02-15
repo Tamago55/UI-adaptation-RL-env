@@ -9,7 +9,7 @@ import utils
 
 import copy
 
-class UIAdaptationEnv (gym.Env):
+class UIAdaptationEnv(gym.Env):
     
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 4}
     actions = {
@@ -28,6 +28,7 @@ class UIAdaptationEnv (gym.Env):
         self.platform = utils.get_random_platform()
         self.environment = utils.get_random_environment()
         self.uidesign = utils.get_random_ui()
+        
         self.state = self.get_observation()
 
         # We have 8 actions, corresponding to:
@@ -36,21 +37,21 @@ class UIAdaptationEnv (gym.Env):
         # Dark theme, Light theme
         # Default font_size, Small font_size, Big font_size
         
-        self.action_space = spaces.Discrete(8)
-        # self.action_space = spaces.Discrete(7)
+        # self.action_space = spaces.Discrete(8)
+        self.action_space = spaces.Discrete(7)
 
         '''
         Layout (2), Colour (2), FSize (3) = 12 combinations
         user = 3 emotions
         platform = 2 posibilities (Windows-desktop OR mobile android)
         environment = 2 posibilities (in/out door)
-        Total possibilities = 12*3*2*2 = 144
+        Total possibilities = 12*3*2*2*3 = 144 * 3
         '''
         self.observation_space = gym.spaces.MultiDiscrete([ 2, 2, 3,    #layout
                                                             2, 2, 3, 3, #user pref + emotion
-                                                            2, 2,       #platform
-                                                            2  ])       #environment
-        
+                                                            1, 1,       #platform
+                                                            1  ])       #environment
+
         self.observation_space_size = np.prod(self.observation_space.nvec)
 
         self.reward_collected = 0
@@ -80,11 +81,13 @@ class UIAdaptationEnv (gym.Env):
         done = False
         info = {}
         reward = 0
+
         initial_design = copy.deepcopy(self.uidesign)
+
         penalize_flag = False
 
-        # action_num = action + 1
-        action_num = action
+        action_num = action + 1
+        #action_num = action
 
         if action_num == 0:
             # noop
@@ -134,11 +137,11 @@ class UIAdaptationEnv (gym.Env):
 
         ## if the action had no effect (repeated action), we penalize the agent.
         if penalize_flag:
-            reward = -5
+            reward -= 5
         else:
-            reward = self.user.get_satisfaction(self.uidesign)    
-            ## After an action, only if UI was updated, user emotions are updated.
             self.user.update_emotion(initial_design, self.uidesign)
+            reward += self.user.get_satisfaction(self.uidesign)
+            ## After an action, only if UI was updated, user emotions are updated.
 
         self.state = self.get_observation()
         
@@ -146,30 +149,28 @@ class UIAdaptationEnv (gym.Env):
 
         # If we obtain the maxium reward (5), then the agent has adapted the UI to
         # the user preferences and achieved the `happy` emotion
-        if reward >= 4:
+        if reward >= 5 :
             done = True
         
         if verbose:
-            print("ONE STEP! action {} - {} . REWARD: {} - Collected_reward: {}".format(
+            print("ONE STEP! action {} - {} . REWARD: {} - Collected_reward: {}, DONE? {}".format(
                 action,
                 self.actions[action_num],
                 reward,
-                self.reward_collected))
+                self.reward_collected,
+                done))
 
         return self.state, reward, done, info
-
-        #return super().step(action)
 
 
     def reset(self, *, seed = None, options = None):
         # print("RESET! CREATING A NEW UI AND CONTEXT")
-        # self.user = utils.get_random_user()
+        self.user = utils.get_random_user()
         # self.platform = utils.get_random_platform()
         # self.environment = utils.get_random_environment()
         self.uidesign = utils.get_random_ui()
         self.state = self.get_observation()
         self.reward_collected = 0
-        #self.state = self.state_as_array()
         return self.state
 
     def state_as_array(self, state, npArray=False):

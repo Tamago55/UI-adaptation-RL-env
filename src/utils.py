@@ -32,6 +32,7 @@ def get_random_environment():
     DocString
     '''
     location = np.random.choice(["indoor", "outdoor"])
+    location = "indoor"
     return Environment(location)
 
 def get_random_platform():
@@ -42,6 +43,7 @@ def get_random_platform():
     # platform_os = np.random.choice(["windows", "android", "ios", "linux"])
 
     device = np.random.choice(["desktop", "mobile"])
+    device = "desktop"
     if device == "desktop":
         platform_os = "windows"
     else:

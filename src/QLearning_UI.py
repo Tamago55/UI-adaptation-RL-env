@@ -1,5 +1,8 @@
 import numpy as np
 import random
+import matplotlib
+# Decimos a matplotlib que use TkAgg para que muestre bien los plots.
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 from uiadaptationenv import UIAdaptationEnv
 import os

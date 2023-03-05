@@ -28,8 +28,8 @@ min_epsilon = 0.00            # Minimum exploration probability
 decay_rate = 0.00005          # Exponential decay rate for exploration prob
 
 # Define the num of episodes and steps per episode
-episodes = 250000
-steps = 5
+episodes = 10000
+steps = 10
 
 # Define the metric list to plot
 mean_reward_per_episode = []
@@ -87,7 +87,7 @@ for episode in range(episodes):
     total_done.append(done)
 
     mean_reward_per_episode.append(np.max(rewards_episode))
-    total_reward_per_episode.append(env.reward_collected)
+    total_reward_per_episode.append(np.sum(rewards_episode))
     number_of_steps_to_complete.append(step)
 
 counter = 0
@@ -106,8 +106,8 @@ ax[0][0].plot(number_of_steps_to_complete)
 ax[0][0].set_title("number_of_steps_to_complete")
 
 # Plot the data in the second subplot
-ax[0][1].plot(mean_reward_per_episode)
-ax[0][1].set_title("Rewards per episode")
+ax[0][1].plot(total_reward_per_episode)
+ax[0][1].set_title("Sum of Rewards per episode")
 
 # Plot the data in the second subplot
 ax[1][0].plot(epsilon_history)

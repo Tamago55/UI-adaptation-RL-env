@@ -33,5 +33,11 @@ class Platform:
 
             }
         }
+    
+    def info(self):
+        print("\tdevice: {}\n\tOS: {}".format(
+            self.device,
+            self.os
+        ))
         
         

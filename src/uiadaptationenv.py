@@ -67,8 +67,13 @@ class UIAdaptationEnv(gym.Env):
         rendering is not important
         '''
         self.uidesign.render()
-        print("\t-----")
+        print("\t--Context---")
+        print("\t\t-User-----")
         self.user.info()
+        print("\t\t-Platform-")
+        self.platform.info()
+        print("\t\t-Env------")
+        self.environment.info()
     
     def close (self):
         '''

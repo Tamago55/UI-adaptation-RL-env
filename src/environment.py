@@ -18,3 +18,11 @@ class Environment:
                 'location': LOCATION[self.location].value
             }
         }
+
+    def info(self):
+        print("\tlocation: {}".format(
+            self.location
+        ))
+        
+
+

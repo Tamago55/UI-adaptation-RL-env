@@ -3,3 +3,7 @@
 *\logs\*
 *\models\*
 *.pickle
+
+*checkpoint
+*.data*
+*.index

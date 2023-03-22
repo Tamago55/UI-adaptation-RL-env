@@ -2,8 +2,8 @@ from enum import Enum
 
 class DEVICE(Enum):
     desktop = 0
-    #tablet = 1
-    mobile = 1
+    tablet = 1
+    mobile = 2
 
 class OS(Enum):
     windows = 0
@@ -27,11 +27,20 @@ class Platform:
         return {
             'platform': {
                 'device': DEVICE[self.device].value,
-                'os': OS[self.os].value
-                # 'screen_size': SCREEN_SIZE[self.screen_size].value
+                'os': OS[self.os].value,
+                'screen_size': SCREEN_SIZE[self.screen_size].value
                 # 'screen_size': self.np_random.uniform(low=[0, 0], high=[1920, 1080]),
 
             }
         }
+    
+    def info(self):
+        print("\tdevice: {}\n\tOS: {}".format(
+            self.device,
+            self.os
+        ))
+
+    
+    
         
         

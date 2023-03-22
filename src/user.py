@@ -44,12 +44,14 @@ class User:
         
         '''
         frustrated = 0
+        
         '''
         current_f_size = current_ui_design.font_sizes[current_ui_design.font_size]
         initial_f_size = initial_ui_design.font_sizes[initial_ui_design.font_size]
         if (np.abs(current_f_size - initial_f_size) >= 2):
             frustrated += 1
         '''
+
         if 'font_size' in self.preferences and \
             self.preferences['font_size'] == initial_ui_design.font_size and \
             not (self.preferences['font_size'] == current_ui_design.font_size):
@@ -80,23 +82,28 @@ class User:
         if 'font_size' in self.preferences and \
             self.preferences['font_size'] == ui_design.font_size:
             score += 1
+        
         if 'layout' in self.preferences and \
             self.preferences['layout'] == ui_design.layout:
             score += 1
+        
         if 'color_scheme' in self.preferences and \
             self.preferences['color_scheme'] == ui_design.color_scheme:
             score += 1
         
+        
         # Si las preferencias del usuario == interfaz. Recompensamos mucho al agente.
         if score >=3:
-            score += 2
+            score = 10
+        else:
+            score = 0
         
-        if self.emotion == 'frustrated':
-            score -= 1
-        if self.emotion == 'happy':
-            score += 1
-        if self.emotion == 'neutral':
-            score += 0
+        # if self.emotion == 'frustrated':
+        #     score -= 1
+        # if self.emotion == 'happy':
+        #     score += 1
+        # if self.emotion == 'neutral':
+        #     score += 0
         return score
 
     def preferences_as_values(self):

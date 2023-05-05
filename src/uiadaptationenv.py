@@ -159,6 +159,8 @@ class UIAdaptationEnv(gym.Env):
                 reward,
                 self.reward_collected,
                 done))
+            
+        print("TESTING PULL REQUESTS")
 
         return self.state, reward, done, info
 

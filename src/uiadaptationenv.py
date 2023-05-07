@@ -3,7 +3,7 @@ from gym import spaces
 import numpy as np
 from user import User
 from platform_ import Platform
-from environment import Environment 
+from environment import Environment
 from uidesign import UIDesign
 import utils
 
@@ -47,10 +47,10 @@ class UIAdaptationEnv(gym.Env):
         environment = 2 posibilities (in/out door)
         Total possibilities = 12*3*2*2*3 = 144 * 3
         '''
-        self.observation_space = gym.spaces.MultiDiscrete([ 2, 2, 3,    #layout
-                                                            2, 2, 3, 3, #user pref + emotion
-                                                            1, 1,       #platform
-                                                            1  ])       #environment
+        self.observation_space = gym.spaces.MultiDiscrete([ 2, 2, 3,    # layout
+                                                            2, 2, 3, 3, # user pref + emotion
+                                                            3, 4, 3,    # platform
+                                                            2  ])       # environment
 
         self.observation_space_size = np.prod(self.observation_space.nvec)
 
@@ -67,13 +67,13 @@ class UIAdaptationEnv(gym.Env):
         rendering is not important
         '''
         self.uidesign.render()
-        print("\t--Context---")
-        print("\t\t-User-----")
+        print("\t--Context--")
+        print("\t\t-User---")
         self.user.info()
-        print("\t\t-Platform-")
-        self.platform.info()
-        print("\t\t-Env------")
+        print("\t\t-Environment---")
         self.environment.info()
+        print("\t\t-Platform---")
+        self.platform.info()
     
     def close (self):
         '''
@@ -142,19 +142,19 @@ class UIAdaptationEnv(gym.Env):
 
         ## if the action had no effect (repeated action), we penalize the agent.
         if penalize_flag:
-            reward -= 5
+            reward = -5
         else:
-            self.user.update_emotion(initial_design, self.uidesign)
-            reward += self.user.get_satisfaction(self.uidesign)
+            # self.user.update_emotion(initial_design, self.uidesign)
+            reward = self.user.get_satisfaction(self.uidesign)
             ## After an action, only if UI was updated, user emotions are updated.
 
         self.state = self.get_observation()
         
         self.reward_collected += reward
 
-        # If we obtain the maxium reward (5), then the agent has adapted the UI to
+        # If we obtain the maxium reward (50), then the agent has adapted the UI to
         # the user preferences and achieved the `happy` emotion
-        if reward >= 5 :
+        if reward >= 10 :
             done = True
         
         if verbose:
@@ -164,6 +164,8 @@ class UIAdaptationEnv(gym.Env):
                 reward,
                 self.reward_collected,
                 done))
+            
+        print("TESTING PULL REQUESTS")
 
         return self.state, reward, done, info
 
@@ -171,8 +173,8 @@ class UIAdaptationEnv(gym.Env):
     def reset(self, *, seed = None, options = None):
         # print("RESET! CREATING A NEW UI AND CONTEXT")
         self.user = utils.get_random_user()
-        # self.platform = utils.get_random_platform()
-        # self.environment = utils.get_random_environment()
+        self.platform = utils.get_random_platform()
+        self.environment = utils.get_random_environment()
         self.uidesign = utils.get_random_ui()
         self.state = self.get_observation()
         self.reward_collected = 0

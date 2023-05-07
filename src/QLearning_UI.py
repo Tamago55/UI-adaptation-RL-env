@@ -1,5 +1,6 @@
 import numpy as np
 import random
+import gym
 import matplotlib
 # Decimos a matplotlib que use TkAgg para que muestre bien los plots.
 matplotlib.use('TkAgg')
@@ -11,21 +12,27 @@ import datetime
 
 # Define the environment
 env = UIAdaptationEnv()
+# env = gym.make("Taxi-v3").env
+
 observation_space_size = env.observation_space.nvec
+# observation_space_size = env.observation_space.n
+
 action_space_size = env.action_space.n
 
 # Define the Q-table
+
 q_table = np.zeros((np.prod(observation_space_size), action_space_size))
+# q_table = np.zeros([env.observation_space.n, env.action_space.n])
 
 # define hyperparameters ----------
-alpha = 0.1           # Learning rate
-gamma = 0.9                  # Discounting rate
+alpha = 0.7           # Learning rate
+gamma = 0.3                  # Discounting rate
 
 # Exploration parameters
 epsilon = 1.0                 # Exploration rate
 max_epsilon = 1.0             # Exploration probability at start
 min_epsilon = 0.00            # Minimum exploration probability
-decay_rate = 0.00005          # Exponential decay rate for exploration prob
+decay_rate = 0.000005          # Exponential decay rate for exploration prob
 
 # Define the num of episodes and steps per episode
 episodes = 10000
@@ -45,6 +52,7 @@ for episode in range(episodes):
     print(f"EPISODE {episode}")
     state = env.reset()
     state_idx = np.ravel_multi_index(state, observation_space_size)
+    # state_idx = state[0]
 
     rewards_episode = []
     rewards = []
@@ -61,9 +69,11 @@ for episode in range(episodes):
         
         actions_episode.append(action)
 
-        # Take the action and get the next state, reward, and done flag
-        next_state, reward, done, _ = env.step(action)
+        # Take the action and get the next state, reward, and done flag        
+        next_state, reward, done, _= env.step(action)
+        # next_state, reward, done, _, _= env.step(action)
         next_state_idx = np.ravel_multi_index(next_state, observation_space_size)
+        # next_state_idx = next_state
 
         # Update the Q-table
         q_table[state_idx][action] = (1 - alpha) * q_table[state_idx][action] + alpha * (reward + gamma * np.max(q_table[next_state_idx]))
@@ -106,16 +116,16 @@ ax[0][0].plot(number_of_steps_to_complete)
 ax[0][0].set_title("number_of_steps_to_complete")
 
 # Plot the data in the second subplot
-ax[0][1].plot(total_reward_per_episode)
-ax[0][1].set_title("Sum of Rewards per episode")
+ax[0][1].plot(mean_reward_per_episode)
+ax[0][1].set_title("Mean reward per episode")
 
 # Plot the data in the second subplot
 ax[1][0].plot(epsilon_history)
 ax[1][0].set_title("E-Decay ")
 
 # Plot the data in the second subplot
-ax[1][1].plot(total_done)
-ax[1][1].set_title("Done evolution?")
+ax[1][1].plot(total_reward_per_episode)
+ax[1][1].set_title("Total rewards per episode?")
 
 
 # Show the figure
